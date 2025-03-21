@@ -1,49 +1,47 @@
-import pygame 
-import time
-import math
+import pygame
+import datetime
 pygame.init()
+w = 600
+h = 500
+angle1 = 0
+angle2 = 0
 
-#пайда болатын экран ұзындықтары
-screen = pygame.display.set_mode((800, 600))
+screen=pygame.display.set_mode((w,h),pygame.RESIZABLE)
+
+pygame.display.set_caption("simple clock")
+
+white=(255,255,255)
+screen.fill(white)
+
+mickey=pygame.image.load(r"images/main-clock.png")
+leftHand=pygame.image.load(r"images/left-hand.png")
+rightHand=pygame.image.load(r"images/right-hand.png")
+
+mickey = pygame.transform.scale( mickey ,(414 , 418))
 clock = pygame.time.Clock()
-
-#пайда болған экранның жоғар жағындағы атау
-pygame.display.set_caption("Mickey clock")
-
-#суреттерді пайда болған экранға енгіземіз
-leftarm = pygame.image.load("images/leftarm.png")
-rightarm = pygame.image.load("images/rightarm.png")
-mainclock = pygame.transform.scale(pygame.image.load("images/clock.png"), (800, 600))
-
-done = False
-
-while not done: 
-    for event in pygame.event.get():
+x=0
+while True:
+    for event in pygame.event.get():    
         if event.type == pygame.QUIT:
-            done = True
-    #localtime арқылы минут пен сикундты анықтап аламыз
-    current_time = time.localtime()
-    minute = current_time.tm_min
-    second = current_time.tm_sec
+            exit()
+    t = datetime.datetime.now()
+    angle1 = -t.second * 6
+    angle2 = -t.minute * 6
 
-    #минут пен сикундтың бұрышын алып аламыз
-    minute_angle = minute * 6 + (second / 60) * 6   
-    second_angle = second * 6  
+    leftHand1 = pygame.transform.rotate(leftHand,x)
+    rightHand1 = pygame.transform.rotate(rightHand,angle2)
 
-    #экран бетіне пайда фонмен болуы
-    screen.blit(mainclock, (0,0))
+    rightHand1=pygame.transform.scale(rightHand1,(rightHand1.get_width()//2 ,rightHand1.get_height()//2))
+    leftHand1=pygame.transform.scale(leftHand1,(leftHand1.get_width()//2 , leftHand1.get_height()//2))
 
-    #оң қол минутты орналастыру (масштаб убираем — используем готовое изображение)
-    rotated_rightarm = pygame.transform.rotate(rightarm, -minute_angle)
-    rightarmrect = rotated_rightarm.get_rect(center=(800 // 2, 600 // 2))
-    screen.blit(rotated_rightarm, rightarmrect)
+    mickeyrect = mickey.get_rect(center = (w//2,h//2))
+    leftHandRect = leftHand1.get_rect(center = (w//2,h//2))
+    rightHandRect = rightHand1.get_rect(center = (w//2,h//2))
 
-    #сол қол секундты орналастыру (масштаб убираем, используем готовую картинку)
-    rotated_leftarm = pygame.transform.rotate(leftarm, -second_angle)
-    leftarmrect = rotated_leftarm.get_rect(center=(800 // 2, 600 // 2))
-    screen.blit(rotated_leftarm, leftarmrect)
+    screen.blit(mickey,mickeyrect)
+    screen.blit(leftHand1,leftHandRect)
+    screen.blit(rightHand1,rightHandRect) 
+    x-=0.6
+    pygame.display.update()
 
-    pygame.display.flip() #окноны жаңартады
-    clock.tick(60) #fps
-
-pygame.quit()
+    clock.tick(10)
